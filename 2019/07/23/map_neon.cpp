@@ -14,32 +14,32 @@ void transform(const uint8_t * map, uint8_t * values, size_t volume) {
 }
 
 static inline uint8x16_t simd_transform16(uint8x16x4_t * table, uint8x16_t input) {
-  uint8x16_t  t1 = vqtbl4q_u8(table[0],  input);
-  uint8x16_t  t2 = vqtbl4q_u8(table[1],  veorq_u8(input, vdupq_n_u8(0x40)));
-  uint8x16_t  t3 = vqtbl4q_u8(table[2],  veorq_u8(input, vdupq_n_u8(0x80)));
-  uint8x16_t  t4 = vqtbl4q_u8(table[3],  veorq_u8(input, vdupq_n_u8(0xc0)));
+  uint8x16_t  t1 = vtbl4_u8(table[0],  input);
+  uint8x16_t  t2 = vtbl4_u8(table[1],  veorq_u8(input, vdupq_n_u8(0x40)));
+  uint8x16_t  t3 = vtbl4_u8(table[2],  veorq_u8(input, vdupq_n_u8(0x80)));
+  uint8x16_t  t4 = vtbl4_u8(table[3],  veorq_u8(input, vdupq_n_u8(0xc0)));
   return vorrq_u8(vorrq_u8(t1,t2), vorrq_u8(t3,t4));
 }
 
 static inline uint8x16_t simd_transform16x(uint8x16x4_t * table, uint8x16_t input) {
-  uint8x16_t  t1 = vqtbl4q_u8(table[0],  input);
-  t1 = vqtbx4q_u8(t1, table[1],  veorq_u8(input, vdupq_n_u8(0x40)));
-  t1 = vqtbx4q_u8(t1, table[2],  veorq_u8(input, vdupq_n_u8(0x80)));
-  t1 = vqtbx4q_u8(t1, table[3],  veorq_u8(input, vdupq_n_u8(0xc0)));
+  uint8x16_t  t1 = vtbl4_u8(table[0],  input);
+  t1 = vtbl4_u8(t1, table[1],  veorq_u8(input, vdupq_n_u8(0x40)));
+  t1 = vtbl4_u8(t1, table[2],  veorq_u8(input, vdupq_n_u8(0x80)));
+  t1 = vtbl4_u8(t1, table[3],  veorq_u8(input, vdupq_n_u8(0xc0)));
   return t1;
 }
 
 uint8x16_t simd_transform16x2(uint8x16x4_t * table, uint8x16_t input) {
-  uint8x16_t t1 = vqtbl4q_u8(table[0], input);
-  t1 = vqtbx4q_u8(t1, table[1], veorq_u8(input, vdupq_n_u8(0x40)));
-  uint8x16_t t3 = vqtbl4q_u8(table[2], veorq_u8(input, vdupq_n_u8(0x80)));
-  t3 = vqtbx4q_u8(t3, table[3], veorq_u8(input, vdupq_n_u8(0xc0)));
+  uint8x16_t t1 = vtbl4_u8(table[0], input);
+  t1 = vtbl4_u8(t1, table[1], veorq_u8(input, vdupq_n_u8(0x40)));
+  uint8x16_t t3 = vtbl4_u8(table[2], veorq_u8(input, vdupq_n_u8(0x80)));
+  t3 = vtbl4_u8(t3, table[3], veorq_u8(input, vdupq_n_u8(0xc0)));
   return vorrq_u8(t1, t3);
 }
 
 static inline uint8x16_t simd_transform16_ascii(uint8x16x4_t * table, uint8x16_t input) {
-  uint8x16_t  t1 = vqtbl4q_u8(table[0],  input);
-  uint8x16_t  t2 = vqtbl4q_u8(table[1],  veorq_u8(input, vdupq_n_u8(0x40)));
+  uint8x16_t  t1 = vtbl4_u8(table[0],  input);
+  uint8x16_t  t2 = vtbl4_u8(table[1],  veorq_u8(input, vdupq_n_u8(0x40)));
   return vorrq_u8(t1,t2);
 }
 
@@ -122,7 +122,7 @@ void neon_transform_ascii64(const uint8_t * map, uint8_t * values, size_t volume
   table[0] = neon_load4(map);
   size_t i = 0;
   for(;i + 16 <=  volume; i+= 16) {
-    vst1q_u8(values + i, vqtbl4q_u8(table[0],vld1q_u8(values + i)));
+    vst1q_u8(values + i, vtbl4_u8(table[0],vld1q_u8(values + i)));
   }
   for(; i < volume; i++) {
     values[i] = map[values[i]];
@@ -143,14 +143,14 @@ void neon_transform_nada(uint8_t * map, uint8_t * values, size_t volume) {
   uint8x16_t x7 = vld1q_u8(values + 16*6); 
   uint8x16_t x8 = vld1q_u8(values + 16*7); 
   for(;i  <  volume; i++) {
-	  x1 = vqtbl4q_u8(table[0],x1); 
-  	  x2 = vqtbl4q_u8(table[0],x2); 
-	  x3 = vqtbl4q_u8(table[0],x3); 
-  	  x4 = vqtbl4q_u8(table[0],x4); 
- 	  x5 = vqtbl4q_u8(table[0],x5); 
-  	  x6 = vqtbl4q_u8(table[0],x6); 
-  	  x7 = vqtbl4q_u8(table[0],x7); 
-  	  x8 = vqtbl4q_u8(table[0],x8); 
+	  x1 = vtbl4_u8(table[0],x1);
+  	  x2 = vtbl4_u8(table[0],x2);
+	  x3 = vtbl4_u8(table[0],x3);
+  	  x4 = vtbl4_u8(table[0],x4);
+ 	  x5 = vtbl4_u8(table[0],x5);
+  	  x6 = vtbl4_u8(table[0],x6);
+  	  x7 = vtbl4_u8(table[0],x7);
+  	  x8 = vtbl4_u8(table[0],x8);
    }
   vst1q_u8(values + 0,    x1); 
   vst1q_u8(values + 16,   x2); 
